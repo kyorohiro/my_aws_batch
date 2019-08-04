@@ -44,6 +44,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
       VpcId: !Ref AppVpc
       AvailabilityZone: "ap-northeast-1a"
       Tags:
@@ -60,6 +61,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLaunch: true
       VpcId: !Ref AppVpc
       AvailabilityZone: "ap-northeast-1c"
       Tags:
@@ -218,8 +220,8 @@ Resources:
         SecurityGroupIds:
           - !GetAtt AppVpc.DefaultSecurityGroup
         Subnets:
-          - !Ref AppPrivateSubnetA
           - !Ref AppPublicSubnetA
+          - !Ref AppPublicSubnetC
         Type: EC2
         Ec2KeyPair: !Ref KeyPair
       ComputeEnvironmentName: MyBatch
