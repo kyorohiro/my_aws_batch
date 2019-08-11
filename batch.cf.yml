@@ -129,6 +129,19 @@ Resources:
       RouteTableId: !Ref AppPublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref AppInternetGateway
+  BatchSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties: 
+      GroupDescription: BatchGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: '-1'
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+      VpcId: !Ref AppVpc
 #
 #  AppSecurityGroup:
 #    Type: AWS::EC2::SecurityGroup
@@ -215,16 +228,16 @@ Resources:
         InstanceRole: !GetAtt ecsInstanceProfile.Arn
         InstanceTypes:
           - optimal
-        MaxvCpus: 256
+        MaxvCpus: 2
         MinvCpus: 0
         SecurityGroupIds:
-          - !GetAtt AppVpc.DefaultSecurityGroup
+          - !Ref BatchSecurityGroup
         Subnets:
           - !Ref AppPublicSubnetA
           - !Ref AppPublicSubnetC
         Type: EC2
         Ec2KeyPair: !Ref KeyPair
-      ComputeEnvironmentName: MyBatch
+      ComputeEnvironmentName: AppBatch
       State: ENABLED
   AppJobQueue:
     Type: AWS::Batch::JobQueue
@@ -243,12 +256,13 @@ Resources:
       ContainerProperties:
         Command: 
           - sleep
-          - "5"
-        Memory: 2056
+          - "30"
+        Memory: 2048
         Vcpus: 2
         Image: busybox
       RetryStrategy:
         Attempts: 1
+
  
 
       
